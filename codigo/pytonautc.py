@@ -1,3 +1,9 @@
+'''
+############################################
+ESTA NO ES LA VERSIÓN BUENA DEL AUTOENCODER, SOLO PRIMER SKETCH
+############################################
+
+'''
 
 import os
 import pandas as pd
