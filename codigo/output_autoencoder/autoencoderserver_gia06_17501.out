@@ -1,0 +1,5 @@
+Hello
+torch.Size([64, 3, 253, 253])
+Época 1, Pérdida: 0.028162053160296827
+Época 2, Pérdida: 0.0006352958606568153
+Entrenamiento completado
