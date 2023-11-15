@@ -1,16 +1,26 @@
-import torch
-from torch.utils.data import Dataset
-from torchvision import transforms
-from PIL import Image
-import os
-from torch.utils.data import DataLoader
-import matplotlib.pyplot as plt
-
-import torch
 import torch.nn as nn
-import torch.optim as optim
-# Define the Discriminator network
 import torch.nn.functional as F
+import os
+from torch.utils.data import Dataset
+from PIL import Image
+
+class CustomDataset(Dataset):
+    def __init__(self, data_folder, transform=None):
+        self.data_folder = data_folder
+        self.image_paths = os.listdir(data_folder)
+        self.transform = transform
+
+    def __len__(self):
+        return len(self.image_paths)
+
+    def __getitem__(self, idx):
+        img_path = os.path.join(self.data_folder, self.image_paths[idx])
+        image = Image.open(img_path).convert('RGB')
+
+        if self.transform:
+            image = self.transform(image)
+
+        return image
 
 class Generator(nn.Module):
     def __init__(self):
@@ -32,13 +42,11 @@ class Generator(nn.Module):
             nn.BatchNorm2d(64),
             nn.ReLU(),
             nn.ConvTranspose2d(64, 3, kernel_size=4, stride=2, padding=1),
-            nn.Tanh()  # To ensure output values are in the range [-1, 1]
+            nn.Tanh()
         )
 
     def forward(self, x):
         return self.model(x)
-
-
 
 class Discriminator(nn.Module):
     def __init__(self):
@@ -57,14 +65,7 @@ class Discriminator(nn.Module):
         )
 
     def forward(self, x):
-        # Forward pass through the convolutional layers
         x = self.model(x)
-        # Apply global average pooling (GAP)
-        x = F.adaptive_avg_pool2d(x, 1)  # Output size will be (batch_size, 1, 1, 1)
-        # Squeeze the tensor to remove singleton dimensions
-        x = x.squeeze(dim=2).squeeze(dim=2)  # Output size will be (batch_size, 1)
+        x = F.adaptive_avg_pool2d(x, 1)
+        x = x.squeeze(dim=2).squeeze(dim=2)
         return x
-
-
-
-
